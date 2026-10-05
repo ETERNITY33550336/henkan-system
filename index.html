@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>痕勘系统 · 登录</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:"Consolas",monospace;color:#c0c8d8}
+body{background:#0a0c10;min-height:100vh;display:flex;align-items:center;justify-content:center}
+.box{width:340px;padding:32px;border:1px solid #222833;background:#0f1217}
+h1{font-size:18px;margin-bottom:24px;color:#e0e6f0}
+input{width:100%;padding:10px 12px;margin:8px 0;border:1px solid #2a303c;background:#0b0e13;outline:none}
+input:focus{border-color:#444c5c}
+button{width:100%;padding:10px;background:#181c24;border:1px solid #333a48;margin-top:12px;cursor:pointer}
+button:hover{background:#20252f}
+.msg{margin-top:16px;color:#ff6b6b;height:20px;font-size:13px}
+.desc{margin-top:20px;font-size:12px;color:#667082;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="box">
+<h1>痕勘系统 — 身份验证</h1>
+<input id="uid" placeholder="观测者ID">
+<input id="pwd" type="password" placeholder="访问密钥">
+<button onclick="login()">验证身份</button>
+<div class="msg" id="msg"></div>
+<div class="desc">
+系统记录已加密。<br>未授权访问将触发记录漂移。
+</div>
+</div>
+<script>
+const userList = [
+  {id:"observer‑B01", pass:"trace0724", level:"B"},
+  {id:"observer‑S00", pass:"root‑henkan", level:"S"},
+  {id:"shenyubai1029", pass:"021029", level:"HOST"} // 宿主账号
+];
+function login(){
+  const uid=document.getElementById("uid").value.trim();
+  const pwd=document.getElementById("pwd").value.trim();
+  const u=userList.find(x=>x.id===uid&&x.pass===pwd);
+  if(u){
+    localStorage.setItem("hk_user",JSON.stringify(u));
+    window.location.href="dashboard.html";
+  }else{
+    document.getElementById("msg").innerText="ID或密钥不匹配，记录拒绝响应。";
+  }
+}
+// 已登录直接跳转
+if(localStorage.getItem("hk_user")) window.location.href="dashboard.html";
+</script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>痕勘系统 · 主控台</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:"Consolas",monospace;color:#c0c8d8}
+body{background:#0a0c10;padding:24px;max-width:900px;margin:0 auto}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;border-bottom:1px solid #222833;padding-bottom:12px}
+h1{font-size:18px;color:#e0e6f0}
+.view-switch{font-size:12px;padding:4px 8px;border:1px solid #333a48;cursor:pointer;background:#12151b}
+.logout{font-size:12px;color:#8892a0;cursor:pointer;margin-left:8px}
+.section{margin-bottom:28px}
+.sec‑title{font-size:14px;color:#99a3b4;margin-bottom:10px}
+.nav‑list{display:flex;flex-direction:column;gap:8px}
+.nav‑item{padding:10px 12px;border:1px solid #222833;background:#0f1217;text-decoration:none}
+.nav‑item:hover{background:#161a21;border-color:#333a48}
+.host‑only{display:none;color:#ff3355}
+.item‑host‑mark{color:#ff3355}
+.tip{font-size:12px;color:#667082;margin-top:6px}
+</style>
+</head>
+<body>
+<header>
+<div>
+<h1>痕勘系统 — 主控台</h1>
+<div class="tip" id="levelTip"></div>
+</div>
+<div>
+<span class="view‑switch" id="viewSwitch" style="display:none">≡ 切换视图</span>
+<span class="logout" onclick="logout()">登出</span>
+</div>
+</header>
+
+<div class="section">
+<div class="sec‑title">系统导航</div>
+<div class="nav‑list" id="navWrap">
+<a class="nav‑item" href="index.html">‑ 身份验证页（返回）</a>
+<a class="nav‑item" href="topsecret‑shen.html">‑ ★ 内部人员档案：沈逾白</a>
+<a class="nav‑item" href="#">‑ ⚠ 内部人员档案：林知深</a>
+<!-- HOST专属导航，JS控制显示 -->
+<a class="nav‑item host‑only" href="trace‑log.html">▸ 痕迹回溯日志</a>
+<a class="nav‑item host‑only" href="tag‑repo.html">▸ 系统底层标记库</a>
+<a class="nav‑item host‑only" href="draft‑buffer.html">▸ 未归档草稿缓冲区</a>
+</div>
+</div>
+
+<div class="section">
+<div class="sec‑title">内部工作人员档案索引</div>
+<div class="nav‑list">
+<a class="nav‑item" href="#">‑ observer‑B01 ｜ 观测者‑B级</a>
+<a class="nav‑item" href="#">‑ observer‑S00 ｜ 观测者‑S级</a>
+<a class="nav‑item" id="shenEntry" href="topsecret‑shen.html">‑ ★ 沈逾白 ｜ 记录标记：绝密</a>
+<a class="nav‑item" href="#">‑ ⚠ 林知深 ｜ 记录标记：异常漂移</a>
+</div>
+</div>
+
+<script>
+let user = JSON.parse(localStorage.getItem("hk_user")||"null");
+if(!user) window.location.href="index.html";
+let isHostView=true;
+const levelTip=document.getElementById("levelTip");
+const hostOnly=document.querySelectorAll(".host‑only");
+const shenEntry=document.getElementById("shenEntry");
+const viewSwitch=document.getElementById("viewSwitch");
+
+function applyView(){
+  if(user.level==="HOST"){
+    viewSwitch.style.display="inline‑block";
+    if(isHostView){
+      levelTip.innerText="当前权限：HOST · 本机宿主";
+      hostOnly.forEach(el=>el.style.display="block");
+      shenEntry.innerText="‑ ✦ ≪本机宿主≫ SYB‑1029 ｜ 记录标记：绝密";
+      shenEntry.classList.add("item‑host‑mark");
+    }else{
+      levelTip.innerText="当前权限：S · 观测者（伪装视图）";
+      hostOnly.forEach(el=>el.style.display="none");
+      shenEntry.innerText="‑ ★ 沈逾白 ｜ 记录标记：绝密";
+      shenEntry.classList.remove("item‑host‑mark");
+    }
+  }else{
+    levelTip.innerText="当前权限："+user.level+" · 观测者";
+    viewSwitch.style.display="none";
+    hostOnly.forEach(el=>el.style.display="none");
+  }
+}
+viewSwitch.onclick=()=>{ isHostView=!isHostView; applyView(); };
+applyView();
+
+// 隐藏键盘交互：输入021029触发控制台旁白（仅HOST）
+let keyBuf="";
+document.addEventListener("keydown",e=>{
+  if(user.level!=="HOST") return;
+  if(/[0‑9]/.test(e.key)){
+    keyBuf+=e.key;
+    if(keyBuf.length>6) keyBuf=keyBuf.slice(-6);
+    if(keyBuf==="021029"){
+      console.log("%c日期是起点，不是密钥","color:#ff3355;font‑size:14px");
+      keyBuf="";
+    }
+  }
+});
+
+function logout(){
+  localStorage.removeItem("hk_user");
+  window.location.href="index.html";
+}
+</script>
+</body>
+</html>
+
+

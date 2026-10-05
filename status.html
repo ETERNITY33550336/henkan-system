@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>痕勘系统 — 系统状态</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:"Microsoft Yahei",monospace;}
+body{background:#14171c;color:#c8cfd8;min-height:100vh;padding:24px;line-height:1.7;}
+header{border-bottom:1px solid #2f3742;padding-bottom:12px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center;max-width:820px;margin-left:auto;margin-right:auto;}
+.title{font-size:18px;letter-spacing:1px;color:#e0e6ed;}
+.back-group{display:flex;gap:16px;}
+.back-link{color:#8cb4d8;cursor:pointer;font-size:13px;text-decoration:none;}
+.reserve-logout{color:#ffb86c;font-size:13px;opacity:0.7;}
+.panel{background:#1c2128;border:1px solid #2f3742;padding:20px;margin-bottom:16px;max-width:820px;margin-left:auto;margin-right:auto;}
+.status-line{font-family:Consolas,monospace;font-size:13px;margin:8px 0;}
+.label{color:#8898aa;}
+.val-normal{color:#a0aabc;}
+.val-warn{color:#ffb86c;}
+.val-error{color:#ff8888;}
+.bar-wrap{width:100%;height:12px;background:#252b33;margin:4px 0 12px;overflow:hidden;}
+.bar-fill{height:100%;background:#485870;width:67%;}
+.bar-fill.warn{background:#99683e;width:89%;}
+.hint{margin-top:20px;font-size:12px;color:#586270;font-style:italic;}
+.login-screen{display:none;text-align:center;padding:60px 20px;max-width:500px;margin:0 auto;}
+.warn{color:#ffb86c;font-size:16px;margin-bottom:10px;}
+</style>
+</head>
+<body>
+<div id="mainApp">
+  <header>
+    <div class="title">痕勘系统 · 系统状态监控</div>
+    <div class="back-group">
+      <a class="back-link" href="dashboard.html">← 返回控制台</a>
+      <span class="reserve-logout">［注销预留 · 待最终同步］</span>
+    </div>
+  </header>
+  <div class="panel">
+    <div class="status-line"><span class="label">痕勘模块状态：</span><span class="val-normal">运行中</span></div>
+    <div class="status-line"><span class="label">时间同步偏移：</span><span class="val-warn">+03:17（不稳定）</span></div>
+    <div class="status-line"><span class="label">痕迹索引完整度：</span><span class="val-normal">67%</span></div>
+    <div class="bar-wrap"><div class="bar-fill"></div></div>
+    <div class="status-line"><span class="label">观测噪声水平：</span><span class="val-warn">89%</span></div>
+    <div class="bar-wrap"><div class="bar-fill warn"></div></div>
+    <div class="status-line"><span class="label">外部信号接入：</span><span class="val-error">检测到未知源</span></div>
+    <div class="status-line"><span class="label">诱饵用户池：</span><span class="val-normal">已载入 · 未对外索引</span></div>
+    <div class="status-line"><span class="label">操作台锁状态：</span><span class="val-normal">已上锁 · 等待S级观测身份</span></div>
+    <div class="hint">
+［痕勘备注］所有读数为模拟状态值，不代表真实服务器数据；时间偏移与噪声异常为预期现象。
+    </div>
+  </div>
+</div>
+<div id="loginScreen" class="login-screen">
+  <div class="warn">⚠️ 访问权限无效或登录状态已失效</div>
+  <div style="font-size:13px;color:#707a88;margin:10px 0;">需要有效的观测者身份校验</div>
+  <a class="back-link" href="index.html">前往身份载入页</a>
+</div>
+<script>
+let auth = null;
+try{
+  const raw = localStorage.getItem('henkan_auth');
+  if(raw) auth = JSON.parse(raw);
+}catch(e){auth=null;}
+const mainApp = document.getElementById('mainApp');
+const loginScreen = document.getElementById('loginScreen');
+if(auth && (auth.level === 'B' || auth.level === 'S')){
+  mainApp.style.display = 'block';
+  loginScreen.style.display = 'none';
+}else{
+  mainApp.style.display = 'none';
+  loginScreen.style.display = 'block';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>痕勘系统 — 痕勘操作台</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:"Microsoft Yahei",monospace;}
+body{background:#14171c;color:#c8cfd8;min-height:100vh;padding:24px;line-height:1.7;}
+header{border-bottom:1px solid #2f3742;padding-bottom:12px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center;max-width:820px;margin-left:auto;margin-right:auto;}
+.title{font-size:18px;letter-spacing:1px;color:#e0e6ed;}
+.back-link{color:#8cb4d8;cursor:pointer;font-size:13px;text-decoration:none;}
+.panel{background:#1c2128;border:1px solid #2f3742;padding:20px;margin-bottom:16px;max-width:820px;margin-left:auto;margin-right:auto;}
+.lock-head{color:#ff6c6c;font-size:17px;margin-bottom:12px;}
+.content{font-size:14px;color:#b0b8c2;white-space:pre-line;}
+.hint{margin-top:20px;font-size:12px;color:#586270;font-style:italic;}
+.login-screen{display:none;text-align:center;padding:60px 20px;max-width:500px;margin:0 auto;}
+.warn{color:#ffb86c;font-size:16px;margin-bottom:10px;}
+</style>
+</head>
+<body>
+<div id="mainApp">
+  <header>
+    <div class="title">痕勘系统 · 痕勘操作台</div>
+    <a class="back-link" href="dashboard.html">← 返回控制台</a>
+  </header>
+  <div class="panel">
+    <div class="lock-head">🔒 S‑Level 权限锁定</div>
+    <div class="content">
+当前身份权限不足，无法进入痕勘操作台。
+操作台包含完整仪式序列、痕迹校准参数、原始未抹除测绘数据。
+
+授权密钥未分发。
+入口存在，但访问被拒绝。
+
+——痕迹等待被正确读取。
+    </div>
+    <div class="hint">
+［痕勘备注］B级仅可查阅档案；S级授权通道暂未开放。
+    </div>
+  </div>
+</div>
+<div id="loginScreen" class="login-screen">
+  <div class="warn">⚠️ 访问权限无效或登录状态已失效</div>
+  <div style="font-size:13px;color:#707a88;margin:10px 0;">需要有效的身份校验</div>
+  <a class="back-link" href="index.html">前往登录页</a>
+</div>
+<script>
+let auth = null;
+try{const raw = localStorage.getItem('henkan_auth');if(raw) auth = JSON.parse(raw);}catch(e){auth=null;}
+const mainApp = document.getElementById('mainApp');
+const loginScreen = document.getElementById('loginScreen');
+if(auth && auth.level === 'S'){
+  mainApp.innerHTML = `
+  <header><div class="title">痕勘系统 · 痕勘操作台</div><a class="back-link" href="dashboard.html">← 返回控制台</a></header>
+  <div class="panel"><div class="lock-head" style="color:#88ffaa;">✅ S‑Level 已授权</div>
+  <div class="content">操作台功能待部署。<br>序列输入面板、日志记录、痕迹校准模块，将在后续更新开放。</div></div>
+  `;
+}else if(auth && auth.level === 'B'){
+  mainApp.style.display = 'block';loginScreen.style.display = 'none';
+}else{
+  mainApp.style.display = 'none';loginScreen.style.display = 'block';
+}
+</script>
+</body>
+</html>
