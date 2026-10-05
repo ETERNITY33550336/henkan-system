@@ -3,50 +3,150 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>痕勘系统 · 登录</title>
+<title>痕勘系统 · 身份载入终端</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:"Consolas",monospace;color:#c0c8d8}
-body{background:#0a0c10;min-height:100vh;display:flex;align-items:center;justify-content:center}
-.box{width:340px;padding:32px;border:1px solid #222833;background:#0f1217}
-h1{font-size:18px;margin-bottom:24px;color:#e0e6f0}
-input{width:100%;padding:10px 12px;margin:8px 0;border:1px solid #2a303c;background:#0b0e13;outline:none}
-input:focus{border-color:#444c5c}
-button{width:100%;padding:10px;background:#181c24;border:1px solid #333a48;margin-top:12px;cursor:pointer}
-button:hover{background:#20252f}
-.msg{margin-top:16px;color:#ff6b6b;height:20px;font-size:13px}
-.desc{margin-top:20px;font-size:12px;color:#667082;line-height:1.5}
+*{box-sizing:border-box;margin:0;padding:0;font-family:"Consolas","Microsoft Yahei",monospace;}
+body{
+  background:#0b0f16;
+  color:#c5cfdd;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+}
+.login-box{
+  width:100%;
+  max-width:360px;
+  background:#131a24;
+  border:1px solid #27303f;
+  padding:28px;
+}
+.title{
+  font-size:18px;
+  letter-spacing:2px;
+  color:#e2e8f0;
+  margin-bottom:6px;
+  text-align:center;
+}
+.sub{
+  font-size:12px;
+  color:#5a6e88;
+  text-align:center;
+  margin-bottom:24px;
+}
+.row{
+  margin-bottom:16px;
+}
+.label{
+  display:block;
+  font-size:13px;
+  color:#94a3b8;
+  margin-bottom:6px;
+}
+input{
+  width:100%;
+  background:#1a212c;
+  border:1px solid #27303f;
+  color:#e2e8f0;
+  padding:10px 12px;
+  font-family:inherit;
+  font-size:14px;
+}
+input:focus{
+  outline:none;
+  border-color:#405270;
+}
+.btn{
+  width:100%;
+  background:#1c2533;
+  border:1px solid #405270;
+  color:#88a0bf;
+  padding:11px;
+  font-family:inherit;
+  cursor:pointer;
+  margin-top:8px;
+}
+.btn:hover{
+  background:#232e3f;
+}
+.msg{
+  margin-top:12px;
+  text-align:center;
+  font-size:13px;
+  color:#ff7777;
+  min-height:18px;
+}
+.footer-note{
+  margin-top:20px;
+  font-size:11px;
+  color:#475569;
+  text-align:center;
+}
 </style>
 </head>
 <body>
-<div class="box">
-<h1>痕勘系统 — 身份验证</h1>
-<input id="uid" placeholder="观测者ID">
-<input id="pwd" type="password" placeholder="访问密钥">
-<button onclick="login()">验证身份</button>
-<div class="msg" id="msg"></div>
-<div class="desc">
-系统记录已加密。<br>未授权访问将触发记录漂移。
+<div class="login-box">
+  <div class="title">痕勘系统</div>
+  <div class="sub">身份载入终端 · v0.4</div>
+
+  <div class="row">
+    <label class="label">观测者ID</label>
+    <input id="uid" type="text" autocomplete="off">
+  </div>
+  <div class="row">
+    <label class="label">访问密钥</label>
+    <input id="pwd" type="password">
+  </div>
+
+  <button class="btn" id="loginBtn">载入身份</button>
+  <div class="msg" id="msg"></div>
+
+  <div class="footer-note">
+    本终端仅对已登记观测者开放<br>
+    所有访问行为将被系统留痕
+  </div>
 </div>
-</div>
+
 <script>
+// ========== 账号配置区 · 你可以随时在这里增删/修改 ==========
+// 格式：{ id:"账号", pass:"密码", level:"B" 或 "S" }
 const userList = [
-  {id:"observer‑B01", pass:"trace0724", level:"B"},
-  {id:"observer‑S00", pass:"root‑henkan", level:"S"},
-  {id:"shenyubai1029", pass:"021029", level:"HOST"} // 宿主账号
+  { id:"zhouyan", pass:"738214", level:"B" },
+  { id:"shenyubai1029", pass:"021029", level:"S" }
 ];
-function login(){
-  const uid=document.getElementById("uid").value.trim();
-  const pwd=document.getElementById("pwd").value.trim();
-  const u=userList.find(x=>x.id===uid&&x.pass===pwd);
-  if(u){
-    localStorage.setItem("hk_user",JSON.stringify(u));
-    window.location.href="dashboard.html";
-  }else{
-    document.getElementById("msg").innerText="ID或密钥不匹配，记录拒绝响应。";
+// ============================================================
+
+const uidEl = document.getElementById("uid");
+const pwdEl = document.getElementById("pwd");
+const btnEl = document.getElementById("loginBtn");
+const msgEl = document.getElementById("msg");
+
+btnEl.addEventListener("click", doLogin);
+pwdEl.addEventListener("keydown", e=>{ if(e.key==="Enter") doLogin(); });
+
+function doLogin(){
+  msgEl.innerText = "";
+  const inputId = uidEl.value.trim();
+  const inputPwd = pwdEl.value.trim();
+
+  const match = userList.find(u => u.id === inputId && u.pass === inputPwd);
+  if(!match){
+    msgEl.innerText = "ID或密钥不匹配 · 访问拒绝";
+    return;
   }
+
+  // 和dashboard、档案页共用同一个存储键 henkan_auth
+  localStorage.setItem("henkan_auth", JSON.stringify({
+    id: match.id,
+    level: match.level
+  }));
+
+  msgEl.innerText = "身份验证通过 · 正在载入控制台…";
+  setTimeout(()=>{
+    window.location.href = "./dashboard.html";
+  },600);
 }
-// 已登录直接跳转
-if(localStorage.getItem("hk_user")) window.location.href="dashboard.html";
 </script>
 </body>
 </html>
