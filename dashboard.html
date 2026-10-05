@@ -3,111 +3,161 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>痕勘系统 · 主控台</title>
+<title>痕勘系统 · 内部人员档案控制台</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:"Consolas",monospace;color:#c0c8d8}
-body{background:#0a0c10;padding:24px;max-width:900px;margin:0 auto}
-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;border-bottom:1px solid #222833;padding-bottom:12px}
-h1{font-size:18px;color:#e0e6f0}
-.view-switch{font-size:12px;padding:4px 8px;border:1px solid #333a48;cursor:pointer;background:#12151b}
-.logout{font-size:12px;color:#8892a0;cursor:pointer;margin-left:8px}
-.section{margin-bottom:28px}
-.sec‑title{font-size:14px;color:#99a3b4;margin-bottom:10px}
-.nav‑list{display:flex;flex-direction:column;gap:8px}
-.nav‑item{padding:10px 12px;border:1px solid #222833;background:#0f1217;text-decoration:none}
-.nav‑item:hover{background:#161a21;border-color:#333a48}
-.host‑only{display:none;color:#ff3355}
-.item‑host‑mark{color:#ff3355}
-.tip{font-size:12px;color:#667082;margin-top:6px}
+*{box-sizing:border-box;margin:0;padding:0;font-family:"Consolas","Microsoft Yahei",monospace;}
+body{background:#0b0f16;color:#c5cfdd;min-height:100vh;padding:24px;line-height:1.7;}
+header{border-bottom:1px solid #27303f;padding-bottom:12px;margin-bottom:24px;max-width:980px;margin-left:auto;margin-right:auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+.title{font-size:20px;letter-spacing:2px;color:#e2e8f0;}
+.user-tag{font-size:13px;color:#88a0bf;}
+.logout-btn{background:#1c2533;border:1px solid #dd555577;color:#ff8888;padding:6px 12px;font-size:13px;cursor:pointer;border-radius:2px;}
+.logout-btn:hover{background:#2c2f38;}
+.wrap{max-width:980px;margin:0 auto;}
+.panel{background:#131a24;border:1px solid #27303f;padding:20px;margin-bottom:20px;}
+.panel-title{font-size:16px;color:#e2e8f0;margin-bottom:12px;border-bottom:1px solid #202834;padding-bottom:8px;}
+.archive-row{display:flex;flex-wrap:wrap;align-items:center;padding:10px 6px;border-bottom:1px solid #1a212c;gap:8px;}
+.archive-row:hover{background:#1a2330;}
+.archive-link{color:#88a0bf;text-decoration:none;position:relative;}
+.cover-bar{display:inline-block;background:#ffffff;color:transparent;padding:0 6px;min-width:120px;user-select:none;}
+.mark-secret{color:#dd5555;}
+.mark-anomaly{color:#ffaa66;}
+.field{font-size:13px;color:#94a3b8;margin-left:10px;}
+.note{margin-top:8px;font-size:12px;color:#5a6e88;font-style:italic;}
+#auth-warning{color:#ff7777;text-align:center;padding:40px 20px;display:none;}
+#main-ui{display:none;}
+#js-fallback{color:#ffaa00;text-align:center;padding:20px;display:none;}
 </style>
 </head>
 <body>
-<header>
-<div>
-<h1>痕勘系统 — 主控台</h1>
-<div class="tip" id="levelTip"></div>
-</div>
-<div>
-<span class="view‑switch" id="viewSwitch" style="display:none">≡ 切换视图</span>
-<span class="logout" onclick="logout()">登出</span>
-</div>
-</header>
+<div class="wrap">
+  <div id="js-fallback">
+    ⚠调度模块加载异常｜部分功能不可用<br>
+    <a href="./index.html">返回登录终端</a>
+  </div>
 
-<div class="section">
-<div class="sec‑title">系统导航</div>
-<div class="nav‑list" id="navWrap">
-<a class="nav‑item" href="index.html">‑ 身份验证页（返回）</a>
-<a class="nav‑item" href="topsecret‑shen.html">‑ ★ 内部人员档案：沈逾白</a>
-<a class="nav‑item" href="#">‑ ⚠ 内部人员档案：林知深</a>
-<!-- HOST专属导航，JS控制显示 -->
-<a class="nav‑item host‑only" href="trace‑log.html">▸ 痕迹回溯日志</a>
-<a class="nav‑item host‑only" href="tag‑repo.html">▸ 系统底层标记库</a>
-<a class="nav‑item host‑only" href="draft‑buffer.html">▸ 未归档草稿缓冲区</a>
-</div>
-</div>
+  <div id="auth-warning">
+    <div class="title">未载入观测者身份</div>
+    <p class="note">请前往登录页载入身份密钥</p>
+    <a class="archive-link" href="./index.html">→ 前往身份载入页</a>
+  </div>
 
-<div class="section">
-<div class="sec‑title">内部工作人员档案索引</div>
-<div class="nav‑list">
-<a class="nav‑item" href="#">‑ observer‑B01 ｜ 观测者‑B级</a>
-<a class="nav‑item" href="#">‑ observer‑S00 ｜ 观测者‑S级</a>
-<a class="nav‑item" id="shenEntry" href="topsecret‑shen.html">‑ ★ 沈逾白 ｜ 记录标记：绝密</a>
-<a class="nav‑item" href="#">‑ ⚠ 林知深 ｜ 记录标记：异常漂移</a>
-</div>
+  <div id="main-ui">
+    <header>
+      <div>
+        <div class="title">痕勘系统｜内部人员档案控制台</div>
+        <div class="user-tag" id="userInfo">身份识别中…</div>
+      </div>
+      <button class="logout-btn" id="logoutBtn">注销当前身份</button>
+    </header>
+
+    <div class="panel">
+      <div class="panel-title">系统导航</div>
+      <div class="archive-row"><a class="archive-link" href="./archive-list.html">归档总清单</a></div>
+      <div class="archive-row"><a class="archive-link" href="./status.html">系统状态监控</a></div>
+      <div class="archive-row"><a class="archive-link" href="./about.html">系统说明 · 关于</a></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">内部工作人员档案索引（权限过滤）</div>
+      <div id="archiveListBox">正在加载档案索引…</div>
+      <div class="note">提示：★绝密条目B级仅可见遮挡占位；⚠异常档案字段存在数据损坏</div>
+    </div>
+
+    <div class="note" style="text-align:center;margin-top:10px;">
+      痕勘系统 · 人事调度模块 v0.4‑机构版
+    </div>
+  </div>
 </div>
 
 <script>
-let user = JSON.parse(localStorage.getItem("hk_user")||"null");
-if(!user) window.location.href="index.html";
-let isHostView=true;
-const levelTip=document.getElementById("levelTip");
-const hostOnly=document.querySelectorAll(".host‑only");
-const shenEntry=document.getElementById("shenEntry");
-const viewSwitch=document.getElementById("viewSwitch");
-
-function applyView(){
-  if(user.level==="HOST"){
-    viewSwitch.style.display="inline‑block";
-    if(isHostView){
-      levelTip.innerText="当前权限：HOST · 本机宿主";
-      hostOnly.forEach(el=>el.style.display="block");
-      shenEntry.innerText="‑ ✦ ≪本机宿主≫ SYB‑1029 ｜ 记录标记：绝密";
-      shenEntry.classList.add("item‑host‑mark");
-    }else{
-      levelTip.innerText="当前权限：S · 观测者（伪装视图）";
-      hostOnly.forEach(el=>el.style.display="none");
-      shenEntry.innerText="‑ ★ 沈逾白 ｜ 记录标记：绝密";
-      shenEntry.classList.remove("item‑host‑mark");
-    }
-  }else{
-    levelTip.innerText="当前权限："+user.level+" · 观测者";
-    viewSwitch.style.display="none";
-    hostOnly.forEach(el=>el.style.display="none");
+const HenkanArchiveConfig = {
+  root: "./",
+  staffList: [
+    {id:"staff001",name:"赵承宇",gender:"男",age:27,level:"D",duty:"现场痕迹采集、基础影像归档",type:"public",path:"staff001.html"},
+    {id:"staff002",name:"陈美惠",gender:"女",age:31,level:"C",duty:"档案录入、交叉核对、台账维护",type:"public",path:"staff002.html"},
+    {id:"staff003",name:"陆凯",gender:"男",age:29,level:"C",duty:"服务器日志巡检、本地备份校验",type:"public",path:"staff003.html"},
+    {id:"staff004",name:"周晓冉",gender:"女",age:24,level:"D",duty:"资料扫描、物理档案入库管理",type:"public",path:"staff004.html"},
+    {id:"staff005",name:"吴正宏",gender:"男",age:35,level:"B",duty:"档案复核、低权限人员审批",type:"public",path:"staff005.html"},
+    {id:"lin-zs",displayName:"  ￦ ۝ ʘ ",realName:"林知深",type:"anomaly",path:"error-lin.html"},
+    {id:"shen-yb",displayName:"██████",realName:"沈逾白",type:"topsecret",path:"topsecret-shen.html"}
+  ],
+  getAuth:function(){
+    try{return JSON.parse(localStorage.getItem("henkan_auth"))||null;}catch(e){return null;}
+  },
+  getPerm:function(){
+    const a=this.getAuth(); return a?.level||"none";
   }
+};
+window.HenkanArchiveConfig=HenkanArchiveConfig;
+
+// ========== 加密工具（偏移量固定7：绝密=第7项） ==========
+function caesarRight7(s){
+  return s.split("").map(c=>{
+    if(/[A-Za-z0-9]/.test(c)){
+      const code=c.charCodeAt(0);
+      if(code>=48&&code<=57) return String.fromCharCode(48+((code-48+7)%10));
+      if(code>=65&&code<=90) return String.fromCharCode(65+((code-65+7)%26));
+      if(code>=97&&code<=122) return String.fromCharCode(97+((code-97+7)%26));
+    }
+    return c;
+  }).join("");
 }
-viewSwitch.onclick=()=>{ isHostView=!isHostView; applyView(); };
-applyView();
+function b64ThenCaesar7(plainText){
+  const b64=btoa(unescape(encodeURIComponent(plainText)));
+  return caesarRight7(b64);
+}
+// ========================================================
 
-// 隐藏键盘交互：输入021029触发控制台旁白（仅HOST）
-let keyBuf="";
-document.addEventListener("keydown",e=>{
-  if(user.level!=="HOST") return;
-  if(/[0‑9]/.test(e.key)){
-    keyBuf+=e.key;
-    if(keyBuf.length>6) keyBuf=keyBuf.slice(-6);
-    if(keyBuf==="021029"){
-      console.log("%c日期是起点，不是密钥","color:#ff3355;font‑size:14px");
-      keyBuf="";
+document.addEventListener('DOMContentLoaded',function(){
+  const warnEl=document.getElementById("auth-warning");
+  const mainEl=document.getElementById("main-ui");
+  const infoEl=document.getElementById("userInfo");
+  const listBox=document.getElementById("archiveListBox");
+  const fallEl=document.getElementById("js-fallback");
+  const perm=HenkanArchiveConfig.getPerm();
+
+  if(typeof HenkanArchiveConfig==='undefined'){ fallEl.style.display="block"; return; }
+  fallEl.style.display="none";
+
+  if(perm==="none"){ warnEl.style.display="block"; }else{
+    warnEl.style.display="none"; mainEl.style.display="block";
+    infoEl.innerText="当前权限等级："+perm+" ｜痕勘人事终端";
+
+    // ====== S权限才输出控制台密文（核心隐藏点） ======
+    if(perm==="S"){
+      // ↓↓↓ 在这里填入你最终Robot36音频的公开可访问链接 ↓↓↓
+      const SECRET_LINK="https://填入你的音频.wav链接";
+      const cipherText=b64ThenCaesar7(SECRET_LINK);
+      // 伪装成系统垃圾日志，不是明显彩蛋
+      console.log("[trace‑sys] fragment‑buffer dump:",cipherText);
     }
+
+    let html="";
+    HenkanArchiveConfig.staffList.forEach(item=>{
+      let nameText=item.realName||item.name;
+      let extraInfo=""; let mark="";
+      if(item.type==="public"){
+        extraInfo=`<span class="field">｜${item.gender}｜${item.age}岁｜权限${item.level}｜${item.duty}</span>`;
+      }
+      if(item.type==="anomaly"){ nameText=item.displayName; mark=' <span class="mark-anomaly">⚠异常</span>'; }
+      if(item.type==="topsecret"){
+        if(perm==="B"){ nameText=`<span class="cover-bar">${item.realName}</span>`; }
+        else{ nameText=item.realName; }
+        mark=' <span class="mark-secret">★绝密</span>';
+      }
+      html+=`<div class="archive-row"><a class="archive-link" href="${HenkanArchiveConfig.root}${item.path}">${nameText}</a>${mark}${extraInfo}</div>`;
+    });
+    listBox.innerHTML=html;
   }
+
+  document.getElementById("logoutBtn").addEventListener("click",function(){
+    if(confirm("确认注销当前观测者身份？会话将被清除。")){
+      localStorage.removeItem("henkan_auth");
+      window.location.href="./index.html";
+    }
+  });
 });
-
-function logout(){
-  localStorage.removeItem("hk_user");
-  window.location.href="index.html";
-}
 </script>
 </body>
 </html>
-
 
