@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>痕勘系统 — 档案碎片03｜仪式流程备注</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:"Microsoft Yahei",monospace;}
+body{background:#14171c;color:#c8cfd8;min-height:100vh;padding:24px;line-height:1.7;}
+header{border-bottom:1px solid #2f3742;padding-bottom:12px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center;max-width:820px;margin-left:auto;margin-right:auto;}
+.title{font-size:18px;letter-spacing:1px;color:#e0e6ed;}
+.back-link{color:#8cb4d8;cursor:pointer;font-size:13px;text-decoration:none;}
+.panel{background:#1c2128;border:1px solid #2f3742;padding:20px;margin-bottom:16px;max-width:820px;margin-left:auto;margin-right:auto;}
+.meta{font-size:12px;color:#707a88;margin-bottom:16px;border-left:2px solid #8cb4d8;padding-left:10px;}
+.content{font-size:14px;white-space:pre-line;}
+.hint{margin-top:20px;font-size:12px;color:#586270;font-style:italic;}
+.lock-note{color:#ff8888;margin-top:12px;font-size:13px;}
+.login-screen{display:none;text-align:center;padding:60px 20px;max-width:500px;margin:0 auto;}
+.warn{color:#ffb86c;font-size:16px;margin-bottom:10px;}
+</style>
+</head>
+<body>
+<div id="mainApp">
+  <header>
+    <div class="title">痕勘系统 · 档案碎片03</div>
+    <a class="back-link" href="dashboard.html">← 返回控制台</a>
+  </header>
+  <div class="panel">
+    <div class="meta">
+档案编号：HK‑FR‑003<br>
+分类：仪式记录 · 残篇<br>
+访问权限：B级及以上（完整流程需S级）<br>
+记录时间：多重重叠时间戳
+    </div>
+    <div class="content">
+【残篇笔记（部分涂黑复原）】
+仪式目的不是召唤，是「校准痕迹」。
+缺口标记是定位符；石台是锚点。
+顺序不能颠倒；方向不能错。
+有人以为可以中断它——但痕迹不会消失，只会转移观察者。
+
+最后的步骤被整段划去。
+页边小字：
+“操作台会记住每一次输入。
+只有授权者，才能看见完整序列。”
+    </div>
+    <div class="lock-note">
+⚠️ 提示：完整仪式序列已加密，需要 S‑Level 授权访问痕勘操作台。
+    </div>
+    <div class="hint">
+［痕勘备注］当前仅开放残篇；操作台入口已存在，但权限锁未解除。
+    </div>
+  </div>
+</div>
+<div id="loginScreen" class="login-screen">
+  <div class="warn">⚠️ 访问权限无效或登录状态已失效</div>
+  <div style="font-size:13px;color:#707a88;margin:10px 0;">需要有效的B级及以上身份校验</div>
+  <a class="back-link" href="index.html">前往登录页</a>
+</div>
+<script>
+let auth = null;
+try{const raw = localStorage.getItem('henkan_auth');if(raw) auth = JSON.parse(raw);}catch(e){auth=null;}
+const mainApp = document.getElementById('mainApp');
+const loginScreen = document.getElementById('loginScreen');
+if(auth && (auth.level === 'B' || auth.level === 'S')){
+  mainApp.style.display = 'block';loginScreen.style.display = 'none';
+}else{
+  mainApp.style.display = 'none';loginScreen.style.display = 'block';
+}
+</script>
+</body>
+</html>

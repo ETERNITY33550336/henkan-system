@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>痕勘系统 — 档案碎片01｜村落口述记录</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:"Microsoft Yahei",monospace;}
+body{background:#14171c;color:#c8cfd8;min-height:100vh;padding:24px;line-height:1.7;}
+header{border-bottom:1px solid #2f3742;padding-bottom:12px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center;max-width:820px;margin-left:auto;margin-right:auto;}
+.title{font-size:18px;letter-spacing:1px;color:#e0e6ed;}
+.back-link{color:#8cb4d8;cursor:pointer;font-size:13px;text-decoration:none;}
+.panel{background:#1c2128;border:1px solid #2f3742;padding:20px;margin-bottom:16px;max-width:820px;margin-left:auto;margin-right:auto;}
+.meta{font-size:12px;color:#707a88;margin-bottom:16px;border-left:2px solid #8cb4d8;padding-left:10px;}
+.content{font-size:14px;white-space:pre-line;}
+.hint{margin-top:20px;font-size:12px;color:#586270;font-style:italic;}
+.login-screen{display:none;text-align:center;padding:60px 20px;max-width:500px;margin:0 auto;}
+.warn{color:#ffb86c;font-size:16px;margin-bottom:10px;}
+</style>
+</head>
+<body>
+<div id="mainApp">
+  <header>
+    <div class="title">痕勘系统 · 档案碎片01</div>
+    <a class="back-link" href="dashboard.html">← 返回控制台</a>
+  </header>
+  <div class="panel">
+    <div class="meta">
+档案编号：HK‑FR‑001<br>
+分类：口述史料 · 未核实<br>
+访问权限：B级及以上<br>
+记录时间：模糊时间戳，存在偏移
+    </div>
+    <div class="content">
+【口述片段（录音转写，有多处杂音缺失）】
+“那条路本来不是现在这样……以前夜里能听见脚步声，不是人走路的声音。
+老人们说不要往深处走，不是怕野兽，是怕‘被记住’。
+很多东西没有消失，只是换了一种方式留在痕迹里。
+
+有人看见过标记，刻在旧石基侧面，不是字，是符号。
+我记不清形状了——好像三个缺口？
+不对，也许我记错了。
+记忆本身，也是一种痕迹。”
+    </div>
+    <div class="hint">
+［痕勘备注］转写存在多处不确定性；原始录音文件状态异常，部分频段被人为滤除。
+线索仅为记录，不代表结论。
+    </div>
+  </div>
+</div>
+<div id="loginScreen" class="login-screen">
+  <div class="warn">⚠️ 访问权限无效或登录状态已失效</div>
+  <div style="font-size:13px;color:#707a88;margin:10px 0;">需要有效的B级及以上身份校验</div>
+  <a class="back-link" href="index.html">前往登录页</a>
+</div>
+<script>
+let auth = null;
+try{const raw = localStorage.getItem('henkan_auth');if(raw) auth = JSON.parse(raw);}catch(e){auth=null;}
+const mainApp = document.getElementById('mainApp');
+const loginScreen = document.getElementById('loginScreen');
+if(auth && (auth.level === 'B' || auth.level === 'S')){
+  mainApp.style.display = 'block';loginScreen.style.display = 'none';
+}else{
+  mainApp.style.display = 'none';loginScreen.style.display = 'block';
+}
+</script>
+</body>
+</html>
